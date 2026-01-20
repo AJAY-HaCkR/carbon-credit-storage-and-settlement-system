@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carbon Credit Lifecycle Dashboard</title>
+</head>
+<body>
+
+<h2>Carbon Credit Lifecycle Dashboard</h2>
+
+<table border="1" cellpadding="8">
+<tr>
+    <th>Block</th>
+    <th>Tx Hash</th>
+    <th>Company</th>
+    <th>Credits</th>
+    <th>Status</th>
+    <th>Govt Target</th>
+    <th>Achieved</th>
+    <th>Timestamp</th>
+</tr>
+
+{% for a in audits %}
+<tr>
+    <td>{{a.block}}</td>
+    <td>{{a.tx[:12]}}...</td>
+    <td>{{a.company}}</td>
+    <td>{{a.credits}}</td>
+    <td>{{a.status}}</td>
+    <td>{{a.target}}</td>
+    <td>{{a.achieved}}</td>
+    <td>{{a.time}}</td>
+</tr>
+{% endfor %}
+
+</table>
+
+</body>
+</html>
+
