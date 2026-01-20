@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Company Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h2>Company Panel</h2>
+
+  <form id="claimForm">
+    <label>Company ID:</label> <input type="number" id="company_id" value="0"><br><br>
+    <label>Certificate Type:</label> <input id="cert_type" value="escert"><br><br>
+    <label>Units:</label> <input type="number" id="units" value="1"><br><br>
+    <button type="submit">Claim Certificates</button>
+  </form>
+
+  <h3>Your Certificates</h3>
+  <label>Company ID:</label> <input id="view_company_id" value="0">
+  <button id="loadClaims">Refresh</button>
+
+  <table id="claimsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Unit</th>
+        <th>Status</th>
+        <th>ETH Reward</th>
+        <th>Validator</th>
+        <th>Claim Time</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    document.getElementById("claimForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const company_id = Number(document.getElementById("company_id").value);
+      const cert_type = document.getElementById("cert_type").value;
+      const units = Number(document.getElementById("units").value);
+      const res = await fetch('/api/claim', {
+        method:'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({company_id, cert_type, units})
+      });
+      const j = await res.json();
+      alert("Created " + j.created.length + " certificate(s)");
+      loadClaims();
+    });
+
+    async function loadClaims() {
+      const id = document.getElementById("view_company_id").value;
+      const res = await fetch('/api/claims?company_id=' + id);
+      const j = await res.json();
+      const tbody = document.querySelector('#claimsTable tbody');
+      tbody.innerHTML = '';
+      j.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td>${c.cert_type}</td>
+          <td>${c.unit_index}</td>
+          <td><span class="status ${c.status}">${c.status}</span></td>
+          <td>${(c.eth_rewarded || 0).toFixed(6)}</td>
+          <td>${c.validator_id || '-'}</td>
+          <td>${c.timestamp ? new Date(c.timestamp).toLocaleString() : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById("loadClaims").onclick = loadClaims;
+    loadClaims();
+  </script>
+</body>
+</html>

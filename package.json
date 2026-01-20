@@ -1,0 +1,14 @@
+{
+  "name": "carbon_project",
+  "version": "1.0.0",
+  "devDependencies": {
+    "truffle": "^5.11.5"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.3"
+  },
+  "scripts": {
+    "truffle-compile": "npx truffle compile",
+    "truffle-migrate": "npx truffle migrate --reset --network development"
+  }
+}

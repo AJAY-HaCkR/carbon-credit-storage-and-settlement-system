@@ -1,0 +1,59 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f8fa;
+  padding: 20px;
+}
+
+h2, h3 {
+  color: #222;
+}
+
+form, table {
+  margin-bottom: 25px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button:hover { background-color: #45a049; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  background-color: #2e3b4e;
+  color: white;
+}
+
+.status {
+  padding: 3px 8px;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+}
+
+.status.fresh { background: #007bff; }
+.status.approved { background: #28a745; }
+.status.rejected { background: #dc3545; }
+.status.burnt { background: #6c757d; }
+
+pre {
+  background: #eee;
+  padding: 10px;
+  border-radius: 5px;
+}

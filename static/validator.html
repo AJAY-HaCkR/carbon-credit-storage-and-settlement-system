@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Validator Panel</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h2>Validator Panel</h2>
+
+  <div style="margin-bottom: 20px;">
+    <label>Validator ID:</label>
+    <input id="validator_id" value="23">
+    <button id="refresh">Load Fresh Claims</button>
+  </div>
+
+  <h3>Fresh Claims</h3>
+  <table id="freshTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Company</th>
+        <th>Type</th>
+        <th>Unit</th>
+        <th>Status</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>Actions</h3>
+  <p>Enter certificate IDs (comma-separated):</p>
+  <input id="ids" placeholder="e.g. 1,2,3" style="width:200px;">
+  <input id="company_id" placeholder="Company ID" value="0" style="width:100px;">
+  <br><br>
+  <button id="approve"> Approve</button>
+  <button id="reject" style="background-color:#dc3545;"> Reject</button>
+  <br><br>
+
+  <h3>Burn Certificates</h3>
+  <input id="burn_ids" placeholder="e.g. 1,2" style="width:200px;">
+  <button id="burn" style="background-color:#6c757d;"> Burn</button>
+
+  <pre id="log"></pre>
+
+  <script>
+    async function loadFresh() {
+      const res = await fetch('/api/claims?status=fresh');
+      const j = await res.json();
+      const tbody = document.querySelector('#freshTable tbody');
+      tbody.innerHTML = '';
+      j.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.id}</td>
+          <td>${c.company_id}</td>
+          <td>${c.cert_type}</td>
+          <td>${c.unit_index}</td>
+          <td><span class="status ${c.status}">${c.status}</span></td>
+          <td>${c.timestamp ? new Date(c.timestamp).toLocaleString() : '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('refresh').onclick = loadFresh;
+    loadFresh();
+
+    async function act(action) {
+      const ids = document.getElementById('ids').value.split(',').map(x => Number(x.trim())).filter(Boolean);
+      const validator_id = Number(document.getElementById('validator_id').value);
+      const company_id = Number(document.getElementById('company_id').value);
+      const res = await fetch('/api/validate', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({validator_id, company_id, action, ids})
+      });
+      const j = await res.json();
+      document.getElementById('log').textContent = JSON.stringify(j, null, 2);
+      loadFresh();
+    }
+
+    document.getElementById('approve').onclick = () => act('approve');
+    document.getElementById('reject').onclick = () => act('reject');
+
+    document.getElementById('burn').onclick = async () => {
+      const ids = document.getElementById('burn_ids').value.split(',').map(x => Number(x.trim())).filter(Boolean);
+      const res = await fetch('/api/burn', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({certificate_ids: ids})
+      });
+      const j = await res.json();
+      document.getElementById('log').textContent = JSON.stringify(j, null, 2);
+      loadFresh();
+    };
+  </script>
+</body>
+</html>
